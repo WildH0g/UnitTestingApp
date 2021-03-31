@@ -114,7 +114,9 @@ Logs out the following:
 A straight-forward method that clears the console log if you are in the local environment.
 
 And finally there is a way to add new tests to the calls with the `addNewTest()` method.
-addNewTest(functionName, func)
+
+### addNewTest(functionName, func)
+
 Let’s say for example that we needed a test that would check whether a number is even:
 
 ```javascript
@@ -127,6 +129,56 @@ test.addNewTest(‘isEven’, isEven);
 const number = 8;
 test.isEven(number, `Number ${number} is even`); // logs out PASSED: Number 8 is even
 
+```
+
+## The TestingTemplate.js File
+
+The template makes use of most of the above features.
+
+To make your tests offline-compatible, aways `require` modules inside an `if (typeof require !== 'undefined')` test and export modules in a similar way inside an `if (typeof module !== 'undefined') module.exports = YourClass`
+
+```javascript
+// jshint esversion: 8
+if (typeof require !== 'undefined') {
+  UnitTestingApp = require('./UnitTestingApp.js');
+}
+
+/*****************
+ * TESTS 
+ *****************/
+
+/**
+ * Runs the tests; insert online and offline tests where specified by comments
+ * @returns {void}
+ */
+function runTests() {
+  const test = new UnitTestingApp();
+  test.enable();
+  test.clearConsole();
+  
+  test.runInGas(false);
+  test.printHeader('LOCAL TESTS');
+  /************************
+   * Run Local Tests Here
+  ************************/
+
+  test.runInGas(true);
+  test.printHeader('ONLINE TESTS');
+    /************************
+   * Run Online Tests Here
+   ************************/
+}
+
+/**
+ * If we're running locally, execute the tests. In GAS environment, runTests() needs to be executed manually
+ */
+(function() {
+  /**
+ * @param {Boolean} - if true, were're in the GAS environment, otherwise we're running locally
+ */
+  const IS_GAS_ENV = typeof ScriptApp !== 'undefined';
+  if (!IS_GAS_ENV) runTests();
+})();
 ```
 
 ## Current Version
