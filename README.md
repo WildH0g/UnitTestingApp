@@ -25,7 +25,7 @@ The 2 methods, `enable()`, `disable()` and the `isEnabled` property are hopefull
 const test = new UnitTestApp();
 test.enable(); // tests will run below this line
 // code
-if(test.isEnabled()) {
+if(test.isEnabled) {
   // code
 }
 
