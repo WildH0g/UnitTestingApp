@@ -31,6 +31,7 @@ if(test.isEnabled) {
 
 test.disable(); // tests will not run below this line
 ```
+**Note:** If tests are disable, print-family function will no produce any output regardless of the level of information we have configured to show. See section: *Control Level of Information to log out* for more information.
 
 ### Choosing the Environment with runInGas(Boolean)
 
@@ -48,7 +49,7 @@ test.runInGas(true);
 
 Then we have the actual built-in testing methods, `assert()`, `catchErr()` and `is2dArray()`.
 
-### Control level of information to log out
+### Control Level of Information to log out
 
 The function `setLevelInfo(value)` controls the level information to be reported through the console. If `value`is equal to `0`, it runs in silent mode, i.e. no information will be reported. The only exception from print-family functions is `printSummary()` that under this mode just logs out a single summary line. For example if no errors found, the output will be:
 
@@ -65,7 +66,7 @@ Here is how the level of information can be specified for silent mode:
 ```javascript
 test.setLevelInfo(0);
 ```
-If value is `1`(default value) it means trace information will log out the result per each test, indicating if the test fails or passed. Depending on the specific testing function it will log out different information, for example, let´s says we want to test the following function:
+If value is `1`(default value) it means trace information will log out the result per each test, indicating if the test fails or passed. Depending on the specific testing function it will log out different information, for example, let's says we want to test the following custom function:
 
 ```javascript
 function addTwoValues (a, b) {
@@ -96,7 +97,8 @@ will return
 ```
 ❌ FAILED: 3 != 4
 ```
-If we invoke `assertEquals` including its optional input argument `message`, then the output information will be on each case the information specificied by this input argument
+
+As you can see there is no need to specify the message, it shows where is the problem. If we invoke `assertEquals` including its optional input argument `message`, then the output information will be on each case the information specificied by this input argument
 
 ```javascript
 test.assertEquals(() => addTwoValues(1,2),3, "Expected result: 1+2 = 3"); 
@@ -110,15 +112,15 @@ The output will be:
 ❌ FAILED: Wrong result because 1+2 should be equal to 3
 ```
 
-If we are using `assert` that has `message`as input argument, the message will be printed as testing result.
+If we are using `assert` that has a mandatory `message`as input argument, the message will be printed as testing result.
 
-In case `printSummary()` is invoked with level info is equal to `1`, it logs out an additional line providing statistics about testing results:
+When using `printSummary()` with level info is equal to `1`, it logs out an additional line providing statistics about testing results:
 
 ```
 TOTAL TESTS= 1, ❌ FAILED=0, ✔ PASSED=1
 ALL TESTS ✔ PASSED
 ```
-Indicating that `1`test passed and `0` test failed
+Indicating that `1`test passed and `0` test failed and the total tests executed
 
 ### assert(condition, message)
 
@@ -139,7 +141,7 @@ test.assert(() => num > 10, `Number ${num} is bigger than 10`);
 ```javascript
 test.assertEquals(() => Math.max(1,2),2); # Expected result is 2 (equal to actual result)
 test.assertEquals(() => Math.max(1,2),1); # Expected result is 1 (different than actual result)
-test.assertEquals(() => Math.max(1,2),2, "Correct result the max of 1,2 is 2"); 
+test.assertEquals(() => Math.max(1,2),2, "Correct result the max of 1,2 is 2"); # Using option input argument message
 ```
 The last case specifies the message to log out as testing result regardless of the test result, the same message will be log out.
 
@@ -176,9 +178,9 @@ test.is2dArray(values, ‘values is an array of arrays’); // logs out PASSED
 
 Then there are a couple of helper methods, `printHeader()` and `clearConsole()`.
 
-### Print* Functions
+### Print-family Functions
 
-**Note**: The level of information shows by print-family functions wil depend on the level of information the user specified via `setLevelInfo(vaue)`, or if no value was specified it assumes the level of infomration is `1`. See section: *Control level of information to log out* for more information.
+**Note**: The level of information shows by print-family functions wil depend on the level of information the user specified via `setLevelInfo(vaue)`, or if no value was specified it assumes the level of infomration is `1`. See section: *Control Level of Information to log out* for more information.
 
 The `printHeader()` function just helps with readability by printing a header in the console like this. It can be used for printing for example the title of the testing set. Here the expected result under `1` level of information:
 
