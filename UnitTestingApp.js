@@ -10,12 +10,12 @@
 
 let UnitTestingApp = (function () {
 
-  _nTests = 0;      // Total number of tests executed
-  _nFailTests = 0;  // Total test failed
-  _nPassTests = 0;  // Total test passed
-  _levelInfo = 1;   // Level of information to show in the output (0-summary, 1-trace and test result information)
   const _enabled = new WeakMap();
   const _runningInGas = new WeakMap();
+  const _nTests = new WeakMap();      // Total number of tests executed
+  const _nFailTests = new WeakMap();  // Total test failed
+  const _nPassTests = new WeakMap();  // Total test passed
+  const _levelInfo = new WeakMap();   // Level of information to show in the output (0-summary, 1-trace and test result information)
 
   class UnitTestingApp {
     constructor() {
@@ -23,10 +23,10 @@ let UnitTestingApp = (function () {
 
       _enabled.set(this, false);
       _runningInGas.set(this, false);
-      this._nTests = 0;
-      this._nFailTests = 0;
-      this._nPassTests = 0;
-      this._levelInfo = 1;
+      _levelInfo.set(this, 1);
+      _nTests.set(this, 0);
+      _nFailTests.set(this, 0);
+      _nPassTests.set(this, 0);
       UnitTestingApp.instance = this;
 
       return UnitTestingApp.instance;
@@ -61,17 +61,17 @@ let UnitTestingApp = (function () {
     }
 
     getLevelInfo() {
-      return this._levelInfo;
+      return _levelInfo.get(this);
     }
 
     setLevelInfo(value) {
-      this._levelInfo = value;
+      _levelInfo.set(this, value);
     }
 
     resetTestCounters() {
-      this._nFailTests = 0;
-      this._nPassTests = 0;
-      this._nTests = 0;
+      _nTests.set(this, 0);
+      _nFailTests.set(this, 0);
+      _nPassTests.set(this, 0);
     }
 
     /**
@@ -83,27 +83,27 @@ let UnitTestingApp = (function () {
     assert(condition, message) {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
-      this._nTests++;
+      _nTests.set(this, _nTests.get(this) + 1);
       try {
         if ("function" === typeof condition) condition = condition();
         if (condition) {
-          this._nPassTests++;
-          if (this._levelInfo > 0) { console.log(`✔ PASSED: ${message}`) };
+          _nPassTests.set(this, _nPassTests.get(this) + 1);
+          if (this.getLevelInfo() > 0) { console.log(`✔ PASSED: ${message}`) };
         }
         else {
-          this._nFailTests++;
-          if (this._levelInfo > 0) { console.log(`❌ FAILED: ${message}`) };
+          _nFailTests.set(this, _nFailTests.get(this) + 1);
+          if (this.getLevelInfo() > 0) { console.log(`❌ FAILED: ${message}`) };
         }
 
       } catch (err) {
-        this._nFailTests++;
-        if (this._levelInfo > 0) { console.log(`❌ FAILED: ${message} (${err})`) };
+        _nFailTests.set(this, _nFailTests.get(this) + 1);
+        if (this.getLevelInfo() > 0) { console.log(`❌ FAILED: ${message} (${err})`) };
       }
     }
 
     /**
      * Tests whether fun result is equal to expected result or not
-     * @param {Function} fun - The function to evaluate
+     * @param {Boolean | Function} Condition or fun - to check
      * @param {String} expectedResult - The expected result to validate
      * @param {String} message - If present, then used as message to display in the console (based on _levelInfo value). 
      *                           If message is not present, then in case the result is not equal, it shows the missmatch
@@ -114,30 +114,35 @@ let UnitTestingApp = (function () {
     assertEquals(fun, expectedResult, message = null) {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
-      this._nTests++;
+      _nTests.set(this, _nTests.get(this) + 1);
       let msg, result;
 
       try {
-        if ("function" === typeof fun) {
-          result = fun();
-        }
-        let condition = expectedResult == result;
+        // Checking preconditions
+        if(fun === undefined) throw new Error("Provide 'fun' input argument");
+        if(expectedResult === undefined) throw new Error("Provide 'expectedResult' input argument");
+
+        ("function" === typeof fun) ? result = fun() : result = fun;
+        let condition = expectedResult === result;
         if (condition) {
-          this._nPassTests++;
+          _nPassTests.set(this, _nPassTests.get(this) + 1);
           msg = (message == null) ? "" : ": " + message;
-          if (this._levelInfo >= 1) { console.log(`✔ PASSED${msg}`) };
+          if (this.getLevelInfo() >= 1) console.log(`✔ PASSED${msg}`);
         }
         else {
-          this._nFailTests++;
+          _nFailTests.set(this, _nFailTests.get(this) + 1);
           msg = (message == null) ? result + " != " + expectedResult : message;
-          if (this._levelInfo >= 1) { console.log(`❌ FAILED: ${msg}`) };
+          if (this.getLevelInfo() >= 1) console.log(`❌ FAILED: ${msg}`);
         }
 
       } catch (err) {
-        this._nFailTests++;
-        this.errorMsg = result + " != " + expectedResult;
-        msg = (message == null) ? result + " != " + expectedResult : message;
-        if (this._levelInfo >= 1) { console.log(`❌ FAILED(err): ${msg} (${err})`) };
+        _nFailTests.set(this, _nFailTests.get(this) + 1);
+        if ((fun === undefined) || (expectedResult === undefined)) {
+          msg ="";
+        } else {
+           msg = (message == null) ? result + " != " + expectedResult : message;
+        }
+        if (this.getLevelInfo() >= 1) console.log(`❌ FAILED(err): ${msg} (${err})`);
       }
     }
 
@@ -183,7 +188,7 @@ let UnitTestingApp = (function () {
     printHeader(text) {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
-      if (_levelInfo > 0) {
+      if (this.getLevelInfo() > 0) {
         console.log('*********************');
         console.log('* ' + text)
         console.log('*********************');
@@ -192,16 +197,17 @@ let UnitTestingApp = (function () {
 
     printSubHeader(text) {
       if (!_enabled.get(this)) return;
-      if (this._levelInfo > 0) { console.log('** ' + text) };
+      if (this.getLevelInfo() > 0) { console.log('** ' + text) };
     }
 
     printSummary() {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
-      if (this._levelInfo > 0) {
-        console.log('TOTAL TESTS= ' + this._nTests + ', ❌ FAILED=' + this._nFailTests + ', ✔ PASSED=' + this._nPassTests);
+      if (this.getLevelInfo() > 0) {
+        console.log('TOTAL TESTS= ' + _nTests.get(this) + ', ❌ FAILED='
+          + _nFailTests.get(this) + ', ✔ PASSED=' + _nPassTests.get(this));
       }
-      console.log((this._nFailTests == 0) ? "ALL TESTS ✔ PASSED" : "❌ Some Tests Failed");
+      console.log((_nFailTests.get(this) == 0) ? "ALL TESTS ✔ PASSED" : "❌ Some Tests Failed");
     }
 
     /**
