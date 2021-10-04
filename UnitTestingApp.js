@@ -137,11 +137,7 @@ let UnitTestingApp = (function () {
 
       } catch (err) {
         _nFailTests.set(this, _nFailTests.get(this) + 1);
-        if ((fun === undefined) || (expectedResult === undefined)) {
-          msg ="";
-        } else {
-           msg = (message == null) ? result + " != " + expectedResult : message;
-        }
+        msg = (msg === undefined) ? "" : ((message == null) ? result + " != " + expectedResult : message);
         if (this.getLevelInfo() >= 1) console.log(`❌ FAILED(err): ${msg} (${err})`);
       }
     }
