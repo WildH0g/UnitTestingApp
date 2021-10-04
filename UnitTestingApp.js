@@ -88,16 +88,16 @@ let UnitTestingApp = (function () {
         if ("function" === typeof condition) condition = condition();
         if (condition) {
           _nPassTests.set(this, _nPassTests.get(this) + 1);
-          if (this.getLevelInfo() > 0) { console.log(`✔ PASSED: ${message}`) };
+          if (this.getLevelInfo() > 0) console.log(`✔ PASSED: ${message}`);
         }
         else {
           _nFailTests.set(this, _nFailTests.get(this) + 1);
-          if (this.getLevelInfo() > 0) { console.log(`❌ FAILED: ${message}`) };
+          if (this.getLevelInfo() > 0) console.log(`❌ FAILED: ${message}`);
         }
 
       } catch (err) {
         _nFailTests.set(this, _nFailTests.get(this) + 1);
-        if (this.getLevelInfo() > 0) { console.log(`❌ FAILED: ${message} (${err})`) };
+        if (this.getLevelInfo() > 0) console.log(`❌ FAILED: ${message} (${err})`);
       }
     }
 
