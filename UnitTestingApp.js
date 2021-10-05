@@ -212,7 +212,7 @@ let UnitTestingApp = (function () {
       let msg = "TOTAL TESTS=%d, ❌ FAILED=%d, ✔ PASSED=%d";
       if (this.getLevelInfo() > 0) console.log(Utilities.formatString(msg, _nTests.get(this),
         _nFailTests.get(this), _nPassTests.get(this)));
-      console.log((_nFailTests.get(this) == 0) ? "ALL TESTS ✔ PASSED" : "❌ Some Tests Failed");
+      console.log((_nFailTests.get(this) == 0) ? "ALL TESTS ✔ PASSED" : "❌ Some Tests FAILED");
     }
 
     /**
