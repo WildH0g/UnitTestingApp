@@ -68,6 +68,10 @@ let UnitTestingApp = (function () {
       _levelInfo.set(this, value);
     }
 
+    /**
+    * Reset statistics counters
+    * @return {void}
+    */
     resetTestCounters() {
       _nTests.set(this, 0);
       _nFailTests.set(this, 0);
@@ -119,8 +123,8 @@ let UnitTestingApp = (function () {
 
       try {
         // Checking preconditions
-        if(fun === undefined) throw new Error("Provide 'fun' input argument");
-        if(expectedResult === undefined) throw new Error("Provide 'expectedResult' input argument");
+        if (fun === undefined) throw new Error("Provide 'fun' input argument");
+        if (expectedResult === undefined) throw new Error("Provide 'expectedResult' input argument");
 
         ("function" === typeof fun) ? result = fun() : result = fun;
         let condition = expectedResult === result;
@@ -193,16 +197,21 @@ let UnitTestingApp = (function () {
 
     printSubHeader(text) {
       if (!_enabled.get(this)) return;
-      if (this.getLevelInfo() > 0) { console.log('** ' + text) };
+      if (this.getLevelInfo() > 0) console.log('** ' + text);
     }
 
+    /**
+    * Logs out testing summary, If _levelInfo is > 0, informs about total tests, number of failed tests and passed tests
+    * and in a second line indicating all test passed if no test failed otherwise indicating some test failed.
+    * If _levelInfo <= 0, logs out only the content of the second line.
+    * @return {void}
+    */
     printSummary() {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
-      if (this.getLevelInfo() > 0) {
-        console.log('TOTAL TESTS= ' + _nTests.get(this) + ', ❌ FAILED='
-          + _nFailTests.get(this) + ', ✔ PASSED=' + _nPassTests.get(this));
-      }
+      let msg = "TOTAL TESTS=%d, ❌ FAILED=%d, ✔ PASSED=%d";
+      if (this.getLevelInfo() > 0) console.log(Utilities.formatString(msg, _nTests.get(this),
+        _nFailTests.get(this), _nPassTests.get(this)));
       console.log((_nFailTests.get(this) == 0) ? "ALL TESTS ✔ PASSED" : "❌ Some Tests Failed");
     }
 
