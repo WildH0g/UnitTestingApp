@@ -51,13 +51,13 @@ Then we have the actual built-in testing methods, `assert()`, `catchErr()` and `
 
 ### Control Level of Information to log out
 
-The function `setLevelInfo(value)` controls the level information to be reported through the console. If `value`is equal to `0`, it runs in silent mode, i.e. no information will be reported. The only exception from print-family functions is `printSummary()` that under this mode just logs out a single summary line. For example if no errors found, the output will be:
+The function `setLevelInfo(value)` controls the level information to be reported through the console. If `value`is less or equal than `0`, it runs in silent mode, i.e. no information will be reported. The only exception from print-family functions is `printSummary()` that under this mode just logs out a single summary line. For example if no errors found, the output will be:
 
 ```ALL TESTS ✔ PASSED```
 
 if at least one test failed then it logs out the following information:
 
-```❌ Some Tests Failed```
+```❌ Some Tests FAILED```
 
 This setup is usufull for large tests where we just want to add some incremental test and to have just a minimal output about the overall testing result.
 
@@ -66,7 +66,7 @@ Here is how the level of information can be specified for silent mode:
 ```javascript
 test.setLevelInfo(0);
 ```
-If value is `1`(default value) it means trace information will log out the result per each test, indicating if the test fails or passed. Depending on the specific testing function it will log out different information, for example, let's says we want to test the following custom function:
+If the value is `1`(default value) or greater, it means trace information will log out the result per each test, indicating if the test failed or passed. Depending on the specific testing function it will log out different information, for example, let's says we want to test the following custom function:
 
 ```javascript
 function addTwoValues (a, b) {
@@ -98,7 +98,7 @@ will return
 ❌ FAILED: 3 != 4
 ```
 
-As you can see there is no need to specify the message, it shows where is the problem. If we invoke `assertEquals` including its optional input argument `message`, then the output information will be on each case the information specificied by this input argument
+As you can see, there is no need to specify the message, it shows where is the problem. If we invoke `assertEquals` including its optional input argument `message`, then the output information will be on each case the information specificied by this input argument
 
 ```javascript
 test.assertEquals(() => addTwoValues(1,2),3, "Expected result: 1+2 = 3"); 
@@ -114,7 +114,7 @@ The output will be:
 
 If we are using `assert` that has a mandatory `message`as input argument, the message will be printed as testing result.
 
-When using `printSummary()` with level info is equal to `1`, it logs out an additional line providing statistics about testing results:
+When using `printSummary()` with level info is equal or greater than `1`, it logs out an additional line providing statistics about testing results:
 
 ```
 TOTAL TESTS= 1, ❌ FAILED=0, ✔ PASSED=1
@@ -136,14 +136,14 @@ test.assert(() => num > 10, `Number ${num} is bigger than 10`);
 // logs out FAILED: Number 2 is bigger than 10
 ```
 ### assertEquals(fun, expectedResult, message)
-`assertEquals`is another assert function, that helps to verify the result with respect the expected value. The first argument is the function we would like to evaluate, the second argument is the expected result. If returned value of the `fun`is not equal to `expectedResult` it fails, otherwise passed. Here is how to validate javascript standard `max()`function:
+`assertEquals`is another assert function, that helps to verify the result with respect the expected value. The first argument is the function or condition we would like to evaluate, the second argument is the expected result. If returned value of the `fun`is not equal to `expectedResult` it fails, otherwise passed. Here is how to validate javascript standard `max()`function:
 
 ```javascript
 test.assertEquals(() => Math.max(1,2),2); # Expected result is 2 (equal to actual result)
 test.assertEquals(() => Math.max(1,2),1); # Expected result is 1 (different than actual result)
-test.assertEquals(() => Math.max(1,2),2, "Correct result the max of 1,2 is 2"); # Using option input argument message
+test.assertEquals(() => Math.max(1,2),2, "Correct result the max of 1,2 is 2"); # Using optional input argument message
 ```
-The last case specifies the message to log out as testing result regardless of the test result, the same message will be log out.
+The last case specifies the message to log out regardless of the test result, i.e. the same message will be log out whether it failed or passed.
 
 
 ### catchErr(condition, expectedErrorMessage, message)
@@ -211,11 +211,11 @@ test.printSummary();
 If we ran 20 tests, where there is one failed test, under level of information equal to `1`, the result will be:
 ```
 TOTAL TESTS= 20, ❌ FAILED=1, ✔ PASSED=19
-ALL TESTS ✔ PASSED
+❌ Some Tests FAILED
 ```
 Similarly if the level of information is equal to `0`, the output will be:
 ```
-ALL TESTS ✔ PASSED
+❌ Some Tests FAILED
 ```
 
 ### resetTestCounters()
