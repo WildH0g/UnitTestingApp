@@ -122,10 +122,6 @@ let UnitTestingApp = (function () {
       let msg, result;
 
       try {
-        // Checking preconditions
-        if (fun === undefined) throw new Error("Provide 'fun' input argument");
-        if (expectedResult === undefined) throw new Error("Provide 'expectedResult' input argument");
-
         ("function" === typeof fun) ? result = fun() : result = fun;
         let condition = expectedResult === result;
         if (condition) {
@@ -141,7 +137,7 @@ let UnitTestingApp = (function () {
 
       } catch (err) {
         _nFailTests.set(this, _nFailTests.get(this) + 1);
-        msg = (msg === undefined) ? "" : ((message == null) ? result + " != " + expectedResult : message);
+        (message == null) ? result + " != " + expectedResult : message;
         if (this.getLevelInfo() >= 1) console.log(`❌ FAILED(err): ${msg} (${err})`);
       }
     }
