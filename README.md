@@ -152,15 +152,28 @@ The goal of this method is to test whether your callback function (`callback`) c
 
 ```javascript
 function square(number) {
-  if (typeof number !== ‘number’) throw new Error(‘Argument must be a number’);
+  if ("number" != typeof number) throw new Error("Argument must be a number");
   return number * number;
 }
 
 test.catchErr(
-  () => square(‘a string’), // we’re passing a string here to test that our function throws an error
-  ‘Argument must be a number’, // this is the error message we are expecting
-  ‘We caught the type error correctly’
-);
+   () => square("a string"), // we’re passing a string here to test that our function throws an error
+   "Argument must be a number", // this is the error message we are expecting
+   "We caught the type error correctly"
+  );
+```
+**Note:** Even Though you can invoke both asserts functions (`assert`, `assertEquals`) not using the `=>` (arrow function), for example:
+```javascript
+test.assertEquals(square(2), 4);
+test.assert(square(2)==4, "Valid case sqrt(2) is equal to 4");
+```
+We don't recommend invoking the functions like this because `catchErr()` function will require arrow function invokation. The following code will produce an execution error on the first line of the body of `sqrt` function.
+```javascript
+test.catchErr(
+   square("a string"), // we’re passing a string here to test that our function throws an error
+   "Argument must be a number", // this is the error message we are expecting
+   "We caught the type error correctly"
+  );
 ```
 
 ### is2dArray(Array)
