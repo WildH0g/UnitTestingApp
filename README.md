@@ -162,12 +162,12 @@ test.catchErr(
    "We caught the type error correctly"
   );
 ```
-**Note:** Even Though you can invoke both asserts functions (`assert`, `assertEquals`) not using the `=>` (arrow function), for example:
+**Note:** Even though you can invoke both asserts functions (`assert`, `assertEquals`) not using the `=>` (arrow function), for example:
 ```javascript
 test.assertEquals(square(2), 4);
 test.assert(square(2)==4, "Valid case sqrt(2) is equal to 4");
 ```
-We don't recommend invoking the functions like this because `catchErr()` function will require arrow function invokation. The following code will produce an execution error on the first line of the body of `sqrt` function.
+We don't recommend invoking like this, because `catchErr()` function will require arrow function invokation. The following code will produce an execution error on the first line of the body of `sqrt` function.
 ```javascript
 test.catchErr(
    square("a string"), // we’re passing a string here to test that our function throws an error
