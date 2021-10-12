@@ -12,6 +12,12 @@ function addTwoValues(a, b) {
   return a + b;
 }
 
+// Function to test in case an error is thrown
+function addTwoValuesSafe(a, b) {
+  if(("number" != typeof a) || ("number" != typeof b)) throw new Error("Input argument is not a valid number");
+  return addTwoValues(a,b);
+}
+
 /*****************
  * TESTS 
  * Taking the sources files from: https://github.com/WildH0g/UnitTestingApp
@@ -57,12 +63,30 @@ function runTests() {
   test.printSubHeader("Expected: 6-Tests, 3-Pass and 3-Fail");
   test.printSummary();
 
+  test.printSubHeader("Testing catching errors");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Expected to fail, becuase the expected error doesn´t match");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Argument must be a number", // this is the error message we are expecting
+    "We caught the error, but with the wrong error message"
+  );
+  test.printSubHeader("Expected to pass, because the expected error matches");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Input argument is not a valid number", // this is the error message we are expecting
+    "We caught the error message correctly"
+  );
+  test.printSummary();
 
   // Testing the same tests but in silent mode (LevelInfo = 0)
   test.printSubHeader("Testing the same tests with setting levelInfo = 0"); // It logs out, because we haven't changed LevelInfo yet
   test.setLevelInfo(0); // 0-Only summary result, 1-Detail results
   // Because LevelInfo = 0 we use the console for traceability purpose
   console.log("LevelInfo = " + test.getLevelInfo());
+  console.log("Reset counters");
+  test.resetTestCounters();
   test.assertEquals(() => addTwoValues(1, 2), 3);
   test.assertEquals(() => addTwoValues(2, 2), 4, "Valid case: 2 + 2 = 4");
   test.assertEquals(() => addTwoValues(1, 2), 4);
