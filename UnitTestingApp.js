@@ -172,7 +172,7 @@ let UnitTestingApp = (function () {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
       try {
-        if (typeof array === 'function') array = array();
+        if ('function' === typeof array) array = array();
         this.assert(Array.isArray(array) && Array.isArray(array[0]), message);
       } catch (err) {
         this.assert(false, `${message}: ${err}`);
