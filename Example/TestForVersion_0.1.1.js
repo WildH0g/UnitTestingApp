@@ -14,8 +14,8 @@ function addTwoValues(a, b) {
 
 // Function to test in case an error is thrown
 function addTwoValuesSafe(a, b) {
-  if(("number" != typeof a) || ("number" != typeof b)) throw new Error("Input argument is not a valid number");
-  return addTwoValues(a,b);
+  if (("number" != typeof a) || ("number" != typeof b)) throw new Error("Input argument is not a valid number");
+  return addTwoValues(a, b);
 }
 
 /*****************
@@ -36,6 +36,9 @@ function runTests() {
   /************************
    * Run Local Tests Here
   ************************/
+
+  let t ="test";
+  console.log(`this is '${t}'`);
 
   test.printHeader("Testing addTwoValues using assertEquals");
   // Testing new method: assertEquals, printSummary and printSubHeader using addTwoValue function with default levelInfo
@@ -63,22 +66,77 @@ function runTests() {
   test.printSubHeader("Expected: 6-Tests, 3-Pass and 3-Fail");
   test.printSummary();
 
-  test.printSubHeader("Testing catching errors");
+  test.printSubHeader("Testing catching errors using catchErr");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
-  test.printSubHeader("Expected to fail, becuase the expected error doesn´t match");
-  test.catchErr(
-    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    "Argument must be a number", // this is the error message we are expecting
-    "We caught the error, but with the wrong error message"
-  );
-  test.printSubHeader("Expected to pass, because the expected error matches");
+
+  test.printSubHeader("Expected: error type and message correct, using user message");
   test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
     "Input argument is not a valid number", // this is the error message we are expecting
     "We caught the error message correctly"
   );
+
+  test.printSubHeader("Expected to fail, becuase the expected error doesn´t match");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Wrong error message", // this is the error message we are expecting
+    "We caught the error, but with the wrong error message"
+  );
+  test.printSubHeader("Expected: error type and message correct, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Wrong error message" // this is the error message we are expecting (wrong)
+  );
+
   test.printSummary();
+
+  test.printSubHeader("Testing catching ErrType..");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+
+  test.printSubHeader("Expected: Error type and message correct");
+  test.catchErrType(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    Error, // This is the error type we are expecting
+    "Input argument is not a valid number", // this is the error message we are expecting
+    "We caught the error type and error message correctly"
+  );
+
+  test.printSubHeader("Expected: Error type correct, but error message wrong, with user message");
+  test.catchErrType(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    Error, // This is the error type we are expecting
+    "Wrong error message", // this is the error message we are expecting
+    "We caught the error type correctly, but wrong error message"
+  );
+
+  test.printSubHeader("Expected: Error type correct, but error message wrong, with default message");
+  test.catchErrType(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    Error, // This is the error type we are expecting
+    "Wrong error message" // this is the error message we are expecting
+  );
+
+  test.printSubHeader("Expected: Error type incorrect, using user message");
+  test.catchErrType(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    TypeError, // This is the error type we are expecting
+    "Wrong error type", // this is the error message we are expecting
+    "We caught incorrect error type"
+  );
+
+  test.printSubHeader("Expected: Error type incorrect, using default message");
+  test.catchErrType(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    TypeError, // This is the error type we are expecting
+    "Wrong error type" // this is the error message we are expecting
+  );
+
+  test.printSummary();
+
+
+
 
   // Testing the same tests but in silent mode (LevelInfo = 0)
   test.printSubHeader("Testing the same tests with setting levelInfo = 0"); // It logs out, because we haven't changed LevelInfo yet
