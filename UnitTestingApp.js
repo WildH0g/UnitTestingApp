@@ -147,10 +147,11 @@ let UnitTestingApp = (function () {
      * Tests functions that throw error messages
      * @param {Function} callback - the function that you expect to return the error message
      * @param {String} errorMessage - the error message you are expecting
-     * @param {String} message - the message to display in the console
+     * @param {String} message - the message to display in the console. If null (default) a message is built as follow in case of fail
+     *             Wrong error message: 'Caugh error message' != errorMessage    
      * @return {void}
      */
-    catchErr(callback, errorMessage, message) {
+    catchErr(callback, errorMessage, message=null) {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
       let isCaught = false;
@@ -158,6 +159,36 @@ let UnitTestingApp = (function () {
         callback();
       } catch (err) {
         isCaught = new RegExp(errorMessage).test(err);
+        message = (!isCaught && (message == null)) ? `Wrong error message: '${errorMessage}' != '${err.message}'` : message;
+      } finally {
+        this.assert(isCaught, message);
+      }
+    }
+
+    /**
+        * Tests functions that throw error (message and type of error)
+        * @param {Function} callback - the function that you expect to return the error message
+        * @param {Type} errorType - the error type you are expecting
+        * @param {String} errorMessage - the error message you are expecting
+        * @param {String} message - the message to display in the console. If null (default value), in case of fail
+        *        It builds a predefined message as follow. In case of wrong error type: 
+        *        Wrong error type: 'errorType' != 'CaughErrorType'
+        *.       In case of wrong error message:  Wrong error message: 'Caugh error message' != 'errorMessage'
+        * @return {void}
+        */
+    catchErrType(callback, errorType, errorMessage, message = null) {
+      if (!_enabled.get(this)) return;
+      if (this.isInGas !== this.runningInGas) return;
+      let isCaught = false;
+      try {
+        callback();
+      } catch (err) {
+        if (err instanceof errorType) {
+          isCaught = new RegExp(errorMessage).test(err);
+          message = (!isCaught && (message == null)) ? `Wrong error message: '${errorMessage}' != '${err.message}'` : message;
+        } else {
+          message = (message == null) ? `Wrong error type: '${errorType.name}' != '${err.name}'` : message;
+        }
       } finally {
         this.assert(isCaught, message);
       }
