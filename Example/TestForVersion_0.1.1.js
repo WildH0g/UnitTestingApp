@@ -37,109 +37,250 @@ function runTests() {
    * Run Local Tests Here
   ************************/
 
-  let t ="test";
-  console.log(`this is '${t}'`);
-
   test.printHeader("Testing addTwoValues using assertEquals");
   // Testing new method: assertEquals, printSummary and printSubHeader using addTwoValue function with default levelInfo
   // We haven´t set levelInfo, so we are using the default value: 1
   test.printSubHeader("Using default Level Info value (1) for 'addTwoValues' function");
-  test.printSubHeader("Expected: Test 1 passes, Test 2 passes with message, Test 3 fails, Test 4 fails with custom message");
+  test.printSubHeader("Expected: Test 1 pass, Test 2 pass with user message, Test 3 fail default message, Test 4 fails with user message");
   test.assertEquals(() => addTwoValues(1, 2), 3); // PASS
   test.assertEquals(() => addTwoValues(2, 2), 4, "Valid case: 2 + 2 = 4"); // PASS with message
   test.assertEquals(() => addTwoValues(1, 2), 4); // FAIL
   test.assertEquals(() => addTwoValues(1, 2), 4, "Expected to fail, because 1+2 != 4");
+  test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests Pass");
   test.printSummary(); // It should print final result and statistics (two lines)
+
   test.printSubHeader("Testing when fun is boolean");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
-  test.printSubHeader("Expected Test-1 Pass, Test-2 Fail");
-  test.assertEquals(1 + 2 == 3, true);
-  test.assertEquals(1 + 1 == 3, true);
+
+  test.printSubHeader("Expected Test-1 pass with default message, Test-2 pass with user message, Test-3 fail with default message, Test-4 fail with user message");
+  test.assertEquals(1 + 2 == 3, true); // Pass
+  test.assertEquals(1 + 2 == 3, true, "Valid Case");
+  test.assertEquals(1 + 1 == 3, true); // FAIL
+  test.assertEquals(1 + 1 == 3, true, "Invalid Case");
+  test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests Pass");
   test.printSummary();
-  test.printSubHeader("Testing undefined input arguments");
-  test.printSubHeader("Expected: Test-3 Pass, Test-4 Fail, Test-5 Pass, Test-6 Fail");
+
+  test.printSubHeader("testing using strings");
+  test.printSubHeader("Test-5 pass with user message, Test-6 pass with default message, Test-7 pass with default message, Test-8 fail with default message, Test-9 fail with deafult message");
+  test.assertEquals("world" == "world", true, "Expected to pass 'world' = 'world'"); // Pass with user message
+  test.assertEquals("world" == "world", true); // Pass
+  test.assertEquals("world" != "World", true, "Expected to pass 'world' != 'World'"); // Pass with user message
+  test.assertEquals("world" == "World", true); // Fail with default message
+  test.assertEquals("world" != "world", true); // Fail with default message
+  test.printSubHeader("Expected: 9-Tests, 4-Tests fail, 5-Tests Pass");
+  test.printSummary();
+
+
+  test.printSubHeader("Testing undefined input arguments using default message or undefined message");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Expected: Test-1 pass, Test-2 fail, Test-3 pass, Test-4 fail");
   test.assertEquals(); // PASS both are undefined
   test.assertEquals(1 + 1); // FAIL, because the expectedValue is undefined
   test.assertEquals(1 + 1, 2, undefined); // Pass but message is undefined
-  test.assertEquals(1 + 1, 3, undefined); // Fail with undefined message (default is null, so the message doesn't show)
-  test.printSubHeader("Expected: 6-Tests, 3-Pass and 3-Fail");
+  test.assertEquals(1 + 1, 3, undefined); // Fail with undefined message (treated as null, so it shows default message
+  test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests pass");
   test.printSummary();
 
-  test.printSubHeader("Testing catching errors using catchErr");
+  test.printHeader("Testing catching errors using catchErr");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
 
-  test.printSubHeader("Expected: error type and message correct, using user message");
+  test.printSubHeader("Testing backward compatibility");
+
+  test.printSubHeader("Expected to pass: throw an error and error message is correct, user provided the message");
   test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    "Input argument is not a valid number", // this is the error message we are expecting
-    "We caught the error message correctly"
+    "Input argument is not a valid number", // this is the error message we are expecting (correct)
+    "We caught the error message correctly" // This is the user message to log out
   );
 
-  test.printSubHeader("Expected to fail, becuase the expected error doesn´t match");
+  test.printSubHeader("Expected to pass: throw an error and error message is correct, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Input argument is not a valid number", // this is the error message we are expecting (correct)
+  );
+
+  test.printSubHeader("Expected to fail: wrong error message, user provided the message");
   test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
     "Wrong error message", // this is the error message we are expecting
     "We caught the error, but with the wrong error message"
   );
-  test.printSubHeader("Expected: error type and message correct, using default message");
+
+  test.printSubHeader("Expected to fail: wrong error message, using default message");
   test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
     "Wrong error message" // this is the error message we are expecting (wrong)
   );
 
+  test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Pass");
   test.printSummary();
 
-  test.printSubHeader("Testing catching ErrType..");
+  test.printSubHeader("Testing error type via errorType optional input argument");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
 
-  test.printSubHeader("Expected: Error type and message correct");
-  test.catchErrType(
+  test.printSubHeader("Expected to pass: error type and error message are correct, user provided the message");
+  test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    Error, // This is the error type we are expecting
     "Input argument is not a valid number", // this is the error message we are expecting
-    "We caught the error type and error message correctly"
+    "We caught the error type and error message correctly",
+    Error // This is the error type we are expecting
   );
 
-  test.printSubHeader("Expected: Error type correct, but error message wrong, with user message");
-  test.catchErrType(
+  test.printSubHeader("Expected to pass: error type and error message are correct, using default message");
+  test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    Error, // This is the error type we are expecting
+    "Input argument is not a valid number", // this is the error message we are expecting
+    Error // This is the error type we are expecting
+  );
+
+  test.printSubHeader("Expected to fail: error type correct, but wrong error message, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
     "Wrong error message", // this is the error message we are expecting
-    "We caught the error type correctly, but wrong error message"
+    "We caught the error type correctly, but wrong error message",
+    Error // This is the error type we are expecting
   );
 
-  test.printSubHeader("Expected: Error type correct, but error message wrong, with default message");
-  test.catchErrType(
+  test.printSubHeader("Expected to fail: error type correct, but wrong error message using default message");
+  test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    Error, // This is the error type we are expecting
-    "Wrong error message" // this is the error message we are expecting
+    "Wrong error message", // this is the error message we are expecting
+    Error // This is the error type we are expecting
   );
 
-  test.printSubHeader("Expected: Error type incorrect, using user message");
-  test.catchErrType(
+  test.printSubHeader("Expected to fail: wrong error type, error message correct, user provided the message");
+  test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    TypeError, // This is the error type we are expecting
-    "Wrong error type", // this is the error message we are expecting
-    "We caught incorrect error type"
+    "Input argument is not a valid number", // this is the error message we are expecting
+    "We caught incorrect error type, but the error message is correct",
+    TypeError // This is the error type we are expecting
   );
 
-  test.printSubHeader("Expected: Error type incorrect, using default message");
-  test.catchErrType(
+  test.printSubHeader("Expected to fail: wrong error type, error message correct, using default message");
+  test.catchErr(
     () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
-    TypeError, // This is the error type we are expecting
-    "Wrong error type" // this is the error message we are expecting
+    "Input argument is not a valid number", // this is the error message we are expecting
+    TypeError // This is the error type we are expecting
   );
 
+  test.printSubHeader("Expected to fail: wrong error type and error message, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Wrong error message", // this is the error message we are expecting
+    "We caught incorrect error type and message",
+    TypeError // This is the error type we are expecting
+  );
+
+  test.printSubHeader("Expected to fail: wrong error type and error message, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe("a", "b"), // we’re passing a string here to test that our function throws an error
+    "Wrong error message", // this is the error message we are expecting
+    TypeError // This is the error type we are expecting
+  );
+
+  test.printSubHeader("Expected: 8-Tests 6-Tests fail, 2-Pass");
   test.printSummary();
 
+  test.printSubHeader("Testing no error should be thrown");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
 
+  // Not catching error
+  test.printSubHeader("Expected to fail: no error should be thrown, correct error message, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "Input argument is not a valid number", // this is the error message we are expecting
+    "No error should be thrown" // this is the error message we are expecting
+  );
 
+  test.printSubHeader("Expected to fail: no error should be thrown, correct error message using defeault message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "Input argument is not a valid number" // this is the error message we are expecting
+  );
 
-  // Testing the same tests but in silent mode (LevelInfo = 0)
-  test.printSubHeader("Testing the same tests with setting levelInfo = 0"); // It logs out, because we haven't changed LevelInfo yet
+  test.printSubHeader("Expected to fail: no error should be thrown, wrong error message,  user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "No error", // this is the error message we are expecting
+    "No error should be thrown" // this is the error message we are expecting
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "No error", // this is the error message we are expecting
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, error type and message are correct, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "Input argument is not a valid number", // this is the error message we are expecting
+    "No error should be thrown", // this is the error message we are expecting
+    Error
+  );
+
+test.printSubHeader("Expected to fail: no error should be thrown, error type and message are correct, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "Input argument is not a valid number", // this is the error message we are expecting
+    Error
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, error type correct and wrong error message, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "No error", // this is the error message we are expecting
+    "No error should be thrown", // this is the error message we are expecting
+    Error
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, error type correct and wrong error message, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "No error", // this is the error message we are expecting
+    Error
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, providing wrong errorType and correct error message, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "Input argument is not a valid number", // this is the error message we are expecting
+    "No error should be thrown", // this is the error message we are expecting
+    TypeError
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, providing wrong errorType and correct error message, using default message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "Input argument is not a valid number", // this is the error message we are expecting
+    TypeError
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, wrong error type an message, user provided the message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "No error", // this is the error message we are expecting
+    "No error should be thrown", // this is the error message we are expecting
+    TypeError
+  );
+
+  test.printSubHeader("Expected to fail: no error should be thrown, providing wrong errorType and wrong error message using default message");
+  test.catchErr(
+    () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
+    "No error", // this is the error message we are expecting
+    TypeError
+  );
+
+  test.printSubHeader("Expected: 12-Tests, 12-Tests fail, 0-Pass");
+  test.printSummary();
+
+  // Testing similar basic tests but in silent mode (LevelInfo = 0)
+  test.printHeader("Testing the same assertEquals tests with setting levelInfo = 0"); // It logs out, because we haven't changed LevelInfo yet
   test.setLevelInfo(0); // 0-Only summary result, 1-Detail results
   // Because LevelInfo = 0 we use the console for traceability purpose
   console.log("LevelInfo = " + test.getLevelInfo());
@@ -156,8 +297,9 @@ function runTests() {
   test.printSummary(); //Shows only summary line
 
   // Testing the existing assert function work as expected
-  test.printSubHeader('Default level Info');
+  test.printSubHeader('Setting default level Info');
   test.setLevelInfo(1);
+
   test.printHeader("Testing addTwoValues using assert");
   test.printSubHeader("LevelInfo = " + test.getLevelInfo());
   test.printSubHeader("Test-1 Pass, Test-2 Fail");
@@ -169,9 +311,11 @@ function runTests() {
   test.printSubHeader("Testing when condition is boolean");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
-  test.printSubHeader("Test-1 Pass, Test-2 Fail");
+  test.printSubHeader("Test-1 Pass, Test-2 pass (empty string), Test-3 fail");
   test.assert(1 + 2 == 3, "Valid case: 1 + 2 = 3");
+  test.assert(1 + 2 == 3, ""); // testing empty message
   test.assert(1 + 1 == 3, "Invalid case: 1 + 1 != 3");
+  test.printSubHeader("3-Tests, 1-fail, 2 pass");
   test.printSummary();
 
   test.printSubHeader("Testing undefined input arguments");
@@ -201,6 +345,7 @@ function runTests() {
   test.assert(() => addTwoValues(1, 2) == 3, "Valid case");
   console.log("Printing the summary line only: all test passed");
   test.printSummary();
+
   console.log("Changing the level info to 1");
   test.setLevelInfo(1);
   test.printSubHeader("Showing now printSummary with two lines for the previous set of tests");
