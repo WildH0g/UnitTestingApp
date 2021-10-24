@@ -13,9 +13,9 @@ let UnitTestingApp = (function () {
   const _enabled = new WeakMap();
   const _runningInGas = new WeakMap();
   const _nTests = new WeakMap();      // Total number of tests executed
-  const _nFailTests = new WeakMap();  // Total test failed
-  const _nPassTests = new WeakMap();  // Total test passed
-  const _levelInfo = new WeakMap();   // Level of information to show in the output (0-summary, 1-trace and test result information)
+  const _nFailTests = new WeakMap();  // Total tests failed
+  const _nPassTests = new WeakMap();  // Total tests passed
+  const _levelInfo = new WeakMap();   // Level of information to show in the console (0-summary, 1-trace and test result information)
 
   class UnitTestingApp {
     constructor() {
@@ -81,7 +81,7 @@ let UnitTestingApp = (function () {
     /**
      * Tests whether conditions pass or not
      * @param {Boolean | Function} condition - The condition to check
-     * @param {String} message - the message to display in the console (based on _levelInfo value)
+     * @param {String} message - the message to display in the console (based on _levelInfo value).
      * @return {void}
      */
     assert(condition, message) {
@@ -92,7 +92,8 @@ let UnitTestingApp = (function () {
         if ("function" === typeof condition) condition = condition();
         if (condition) {
           _nPassTests.set(this, _nPassTests.get(this) + 1);
-          if (this.getLevelInfo() > 0) console.log(`✔ PASSED: ${message}`);
+          let msg = (message =="") ? "" : ": " + message; // remove ":" if empty message
+          if (this.getLevelInfo() > 0) console.log(`✔ PASSED${msg}`);
         }
         else {
           _nFailTests.set(this, _nFailTests.get(this) + 1);
@@ -109,10 +110,11 @@ let UnitTestingApp = (function () {
      * Tests whether fun result is equal to expected result or not
      * @param {Boolean | Function} Condition or fun - to check
      * @param {String} expectedResult - The expected result to validate
-     * @param {String} message - If present, then used as message to display in the console (based on _levelInfo value). 
-     *                           If message is not present, then in case the result is not equal, it shows the missmatch
-     *                           In the form of: "result != expectedResult". If the result is valid and message is not 
-     *                           provided, then it only indicates the test passed.
+     * @param {String} message - If present, then used as message to display to console (based on _levelInfo value). 
+     *                           If message is not provided (default), then in case the result is not equal to expectedResult, 
+     *                           it shows the missmatch in the form of: 
+     *                           "'result' != 'expectedResult'" (numbers or booleans are not wrapped in quotes ('))
+     *                           If the result is valid and message is not provided, then it only indicates the test passed.
      * @return {void}
      */
     assertEquals(fun, expectedResult, message = null) {
@@ -120,7 +122,8 @@ let UnitTestingApp = (function () {
       if (this.isInGas !== this.runningInGas) return;
       _nTests.set(this, _nTests.get(this) + 1);
       let msg, result;
-
+      //wraps in quotes (') any type except numbers or boolean
+      function q(v){return (('number' === typeof v) || ('boolean' === typeof v)) ? v : "'" + v + "'"}; 
       try {
         ("function" === typeof fun) ? result = fun() : result = fun;
         let condition = expectedResult === result;
@@ -131,66 +134,55 @@ let UnitTestingApp = (function () {
         }
         else {
           _nFailTests.set(this, _nFailTests.get(this) + 1);
-          msg = (message == null) ? result + " != " + expectedResult : message;
+          msg = (message == null) ?  q(result) + " != " + q(expectedResult) : message;
           if (this.getLevelInfo() >= 1) console.log(`❌ FAILED: ${msg}`);
         }
 
       } catch (err) {
         _nFailTests.set(this, _nFailTests.get(this) + 1);
-        (message == null) ? result + " != " + expectedResult : message;
+        (message == null) ? q(result) + " != " + q(expectedResult) : message;
         if (this.getLevelInfo() >= 1) console.log(`❌ FAILED(err): ${msg} (${err})`);
       }
     }
 
-
     /**
-     * Tests functions that throw error messages
-     * @param {Function} callback - the function that you expect to return the error message
-     * @param {String} errorMessage - the error message you are expecting
-     * @param {String} message - the message to display in the console. If null (default) a message is built as follow in case of fail
-     *             Wrong error message: 'Caugh error message' != errorMessage    
-     * @return {void}
-     */
-    catchErr(callback, errorMessage, message=null) {
-      if (!_enabled.get(this)) return;
-      if (this.isInGas !== this.runningInGas) return;
-      let isCaught = false;
-      try {
-        callback();
-      } catch (err) {
-        isCaught = new RegExp(errorMessage).test(err);
-        message = (!isCaught && (message == null)) ? `Wrong error message: '${errorMessage}' != '${err.message}'` : message;
-      } finally {
-        this.assert(isCaught, message);
-      }
-    }
-
-    /**
-        * Tests functions that throw error (message and type of error)
+        * Tests functions that throw error, validating message and/or type of error. If no error thrown, then the test fails.
         * @param {Function} callback - the function that you expect to return the error message
-        * @param {Type} errorType - the error type you are expecting
         * @param {String} errorMessage - the error message you are expecting
-        * @param {String} message - the message to display in the console. If null (default value), in case of fail
-        *        It builds a predefined message as follow. In case of wrong error type: 
-        *        Wrong error type: 'errorType' != 'CaughErrorType'
-        *.       In case of wrong error message:  Wrong error message: 'Caugh error message' != 'errorMessage'
+        * @param {String} message - the message to display to console (based on _levelInfo attribute value). 
+        *        If null (default value), in case error is cautgh, it builds a predefined message as follow: 
+        *         In case of wrong error type: "Wrong error type: 'CaughErrorType' != 'errorType'"
+        *         In case of wrong error message: "Wrong error message: 'Caugh error message' != 'errorMessage'"
+        *         In case both errorType and errorMessage are wrong: 
+        *           "Wrong error type: 'CaughErrorType' != 'errorType' and Wrong error message: 'Caugh error message' != 'errorMessage'"
+        *        If no error was caught, then the message will be: "No error thrown"
+        * @param {Type} errorType - the error type you are expecting
         * @return {void}
         */
-    catchErrType(callback, errorType, errorMessage, message = null) {
+    catchErr(callback, errorMessage, message = null, errorType = null) {
       if (!_enabled.get(this)) return;
       if (this.isInGas !== this.runningInGas) return;
-      let isCaught = false;
+      let isCaughtErrorType = true, isCaughtErrorMessage = false;
+      
+      // Identify correct input argument by its expected type
+      if ((message != null) && ("string" != typeof message)) {// invoked: catchErr(callback,string, null, Error)
+        errorType = message;
+        message = null;
+      }
+
       try {
         callback();
       } catch (err) {
-        if (err instanceof errorType) {
-          isCaught = new RegExp(errorMessage).test(err);
-          message = (!isCaught && (message == null)) ? `Wrong error message: '${errorMessage}' != '${err.message}'` : message;
-        } else {
-          message = (message == null) ? `Wrong error type: '${errorType.name}' != '${err.name}'` : message;
+        if (errorType != null) isCaughtErrorType = err instanceof errorType;
+        isCaughtErrorMessage = new RegExp(errorMessage).test(err);
+        if (message == null) {
+          !isCaughtErrorType ? message = `Wrong error type: '${err.name}' != '${errorType.name}'` : message ="";
+          if (!isCaughtErrorMessage) message += (!isCaughtErrorType ? " and wrong " : "Wrong ")
+            + `error message: '${errorMessage}' != '${err.message}'`;
         }
       } finally {
-        this.assert(isCaught, message);
+        if (message == null) message = "No error thrown";
+        this.assert(isCaughtErrorType && isCaughtErrorMessage, message);
       }
     }
 
