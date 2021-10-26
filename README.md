@@ -1,5 +1,7 @@
 # UnitTestingApp for Google Apps Script
 
+[![Join the chat at https://gitter.im/UnitTestingApp/community](https://badges.gitter.im/UnitTestingApp/community.svg)](https://gitter.im/UnitTestingApp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Introduction
 
 This is a unit testing library with Google Apps Script in mind. It has 0 depencies, lightweight and can run online in the Google Apps Script environment as well as offline in you IDE.
