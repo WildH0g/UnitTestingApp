@@ -38,49 +38,179 @@ function runTests() {
   ************************/
 
   test.printHeader("Testing addTwoValues using assertEquals");
-  // Testing new method: assertEquals, printSummary and printSubHeader using addTwoValue function with default levelInfo
   // We haven´t set levelInfo, so we are using the default value: 1
   test.printSubHeader("Using default Level Info value (1) for 'addTwoValues' function");
-  test.printSubHeader("Expected: Test 1 pass, Test 2 pass with user message, Test 3 fail default message, Test 4 fails with user message");
-  test.assertEquals(() => addTwoValues(1, 2), 3); // PASS
-  test.assertEquals(() => addTwoValues(2, 2), 4, "Valid case: 2 + 2 = 4"); // PASS with message
-  test.assertEquals(() => addTwoValues(1, 2), 4); // FAIL
-  test.assertEquals(() => addTwoValues(1, 2), 4, "Expected to fail, because 1+2 != 4");
-  test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests Pass");
-  test.printSummary(); // It should print final result and statistics (two lines)
+  test.printSubHeader("Expected: Test 1 pass user message, Test 2 pass with default, Test 3 fail user message, Test 4 fails with default message");
+  test.assertEquals(() => addTwoValues(2, 2), 4, "Valid case: 2 + 2 = 4"); // Pass
+  test.assertEquals(() => addTwoValues(1, 2), 3); // Pass
+  test.assertEquals(() => addTwoValues(1, 2), 4, "Expected to fail, because 1 + 2 != 4"); // Fail
+  test.assertEquals(() => addTwoValues(1, 2), 4); // Fail
+  test.printSubHeader("Expected: 4-Test, 2-Tests fail, 2-Tests Pass");
+  test.printSummary(); // It should print final result and statistics (two lines);
 
-  test.printSubHeader("Testing when fun is boolean");
+  test.printSubHeader("Testing when condition is boolean");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
-
-  test.printSubHeader("Expected Test-1 pass with default message, Test-2 pass with user message, Test-3 fail with default message, Test-4 fail with user message");
+  test.printSubHeader("Expected Test-1 pass with user message, Test-2 pass with default message, Test-3 fail with user message, Test-4 fail with default message");
+  test.assertEquals(1 + 2 == 3, true, "Valid Case"); // Pass
   test.assertEquals(1 + 2 == 3, true); // Pass
-  test.assertEquals(1 + 2 == 3, true, "Valid Case");
-  test.assertEquals(1 + 1 == 3, true); // FAIL
   test.assertEquals(1 + 1 == 3, true, "Invalid Case");
+  test.assertEquals(1 + 1 == 3, true); // Fail
   test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests Pass");
   test.printSummary();
 
-  test.printSubHeader("testing using strings");
-  test.printSubHeader("Test-5 pass with user message, Test-6 pass with default message, Test-7 pass with default message, Test-8 fail with default message, Test-9 fail with deafult message");
-  test.assertEquals("world" == "world", true, "Expected to pass 'world' = 'world'"); // Pass with user message
+  test.printSubHeader("Testing using strings conditions and validating the result with boolean condition");
+  test.printSubHeader("Test-5 pass with user message, Test-6 pass with default message, Test-7 pass with user message, Test-8 fail with default message, Test-9 fail with deafult message");
+  test.assertEquals("world" == "world", true, "Expected to pass 'world' = 'world'"); // Pass
   test.assertEquals("world" == "world", true); // Pass
-  test.assertEquals("world" != "World", true, "Expected to pass 'world' != 'World'"); // Pass with user message
-  test.assertEquals("world" == "World", true); // Fail with default message
-  test.assertEquals("world" != "world", true); // Fail with default message
+  test.assertEquals("world" != "World", true, "Expected to pass 'world' != 'World'"); // Pass
+  test.assertEquals("world" == "World", true); // Fail
+  test.assertEquals("world" != "world", true); // Fail
   test.printSubHeader("Expected: 9-Tests, 4-Tests fail, 5-Tests Pass");
   test.printSummary();
 
+  test.printSubHeader("Testing using empty message");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.assertEquals(1 + 2 == 3, true, ""); // Pass
+  test.assertEquals(1 + 1 == 3, true, ""); // Fail
+  test.printSubHeader("Expected: 2-Tests, 1-Test fail, 1-Test Pass");
+  test.printSummary();
+
+  test.printSubHeader("Testing using strings and validating with string value");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Test-1 pass with user message, Test-2 pass with default message, Test-3 fail with user message, Test-4 fail with default message")
+  test.assertEquals("world", "world", "Expected to pass 'world' = 'world'"); // Pass
+  test.assertEquals("world", "world"); // Pass
+  test.assertEquals("world", "World", "Expected to fail 'world' != 'World'"); // Fail
+  test.assertEquals("world", "World"); // Fail
+  test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests Pass");
+  test.printSummary();
 
   test.printSubHeader("Testing undefined input arguments using default message or undefined message");
   test.printSubHeader("Reset counters");
   test.resetTestCounters();
-  test.printSubHeader("Expected: Test-1 pass, Test-2 fail, Test-3 pass, Test-4 fail");
+  test.printSubHeader("Expected: Test-1 pass (no arguments), Test-2 fail (only condition), Test-3 pass with undefined message, Test-4 fail with undefined message");
   test.assertEquals(); // PASS both are undefined
   test.assertEquals(1 + 1); // FAIL, because the expectedValue is undefined
   test.assertEquals(1 + 1, 2, undefined); // Pass but message is undefined
   test.assertEquals(1 + 1, 3, undefined); // Fail with undefined message (treated as null, so it shows default message
   test.printSubHeader("Expected: 4-Tests, 2-Tests fail, 2-Tests pass");
+  test.printSummary();
+
+  test.printSubHeader("Testing an unexpected error occurred");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Expected: unexpected error with user message");
+  test.assertEquals(
+    () => addTwoValuesSafe("a", "b"), // an unexpected error will thrown
+    "a + b",
+    "Expected: unexpected error"
+  );
+  test.printSubHeader("Expected: unexpected error with default message");
+  test.assertEquals(
+    () => addTwoValuesSafe("a", "b"), // an unexpected error will thrown
+    "a + b"
+  );
+
+  // Testing the existing assert function work as expected for backward compatibility
+  test.printHeader("Testing addTwoValues using assert");
+  test.printSubHeader("Test-1 Pass with user message, Test-2 pass with default message, Test-3 fail with user message, Test-4 fail with default message");
+  test.assert(() => addTwoValues(1, 2) == 3, "Valid case: 1 + 2 = 3"); // Pass
+  test.assert(() => addTwoValues(1, 2) == 3); // Pass
+  test.assert(() => addTwoValues(1, 2) == 4, "Invalid case: 1 + 2 != 4"); // Fail
+  test.assert(() => addTwoValues(1, 2) == 4); // Fail
+  test.printSubHeader("4-Tests, 2-Tests Fail, 2-Tests Pass");
+  test.printSummary();
+
+  test.printSubHeader("Testing when condition is boolean");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Test-1 Pass with user message, Test-2 pass with default message, Test-3 fail user message, Test-4 fail with default message");
+  test.assert(1 + 2 == 3, "Valid case: 1 + 2 = 3"); // Pass
+  test.assert(1 + 2 == 3); // Pass
+  test.assert(1 + 1 == 3, "Invalid case: 1 + 1 != 3"); // Fail
+  test.assert(1 + 1 == 3); // Fail
+  test.printSubHeader("4-Tests, 2-fail, 2-Tests pass");
+  test.printSummary();
+
+
+  test.printSubHeader("Testing using strings conditions and validating the result with boolean condition");
+  test.printSubHeader("Test-5 pass with user message, Test-6 pass with default message, Test-7 pass with user message, Test-8 fail with user message, Test-9 fail with deafult message, Test-10 fail with default message");
+  test.assert("world" == "world", "Expected to pass 'world' = 'world'"); // Pass
+  test.assert("world" == "world"); // Pass
+  test.assert("world" != "World", "Expected to pass 'world' != 'World'"); // Pass
+  test.assert("world" == "World", "Expected to fail 'word' != 'World"); // Fail
+  test.assert("world" == "World"); // Fail
+  test.assert("world" != "world"); // Fail
+
+  test.printSubHeader("Expected: 10-Tests, 5-Tests fail, 5-Tests Pass");
+  test.printSummary();
+
+  test.printSubHeader("Testing using empty message");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.assert(1 + 2 == 3, ""); // Pass
+  test.assert(1 + 1 == 3, ""); // Fail
+  test.printSubHeader("Expected: 2-Tests, 1-Test fail, 1-Test Pass");
+  test.printSummary();
+
+  test.printSubHeader("Testing undefined input arguments");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Expected: Test-1 Fail (no arguments), Test-2 Pass with (undefined message), Test-3 Pass(with undefined message), Test-4 Fail (with undefined message)");
+  test.assert(); // Fail, not a valid condition
+  test.assert(undefined == undefined); // Pass
+  test.assert(1 + 1 == 2); // Pass
+  test.assert(1 + 1 == 3); // Fail
+  test.printSubHeader("Expected: 4-Tests, Fail=2, Pass=2");
+  test.printSummary();
+
+  test.printSubHeader("Testing an unexpected error occured");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.printSubHeader("Expected: unexpected error with user message");
+  test.assert(
+    () => addTwoValuesSafe("a", "b"), // unexpected error was thrown
+    "Expected: unexpected error"
+  );
+  test.printSubHeader("Expected: unexpected error with default message");
+  test.assert(
+    () => addTwoValuesSafe("a", "b") // unexpected error was thrown
+  );
+
+  test.printSubHeader("Testing set levelInfo");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+  test.assert(() => test.levelInfo = 1.1, "Valid case: 1.1 is a number");
+  test.catchErr(
+    () => test.levelInfo = "non number", // Expected to throw a TypeError
+    "Input argument value should be a number", // this is the error message we are expecting
+    "Throw an error because value is a string. Expected error type and message to be correct",
+    TypeError
+  );
+  test.printSubHeader("2-Tests, 0-fail, 2-pass");
+  test.printSummary();
+
+  test.printHeader("Testing is2Array");
+  test.printSubHeader("Reset counters");
+  test.resetTestCounters();
+
+  const array2D = [
+    ["a1", "a2"],
+    ["b1", "b2"]
+  ];
+  const array = ["a1", "a2"];
+  test.is2dArray(array2D, "Expected to pass, values is an array of arrays");
+  test.is2dArray(null, "Expected to fail, it is null input value");
+  test.is2dArray(array, "Expected to fail, it is a single array");
+  test.is2dArray([array], "Expected to pass, it is a 2D array");
+  test.is2dArray([array]); // PASS
+  test.is2dArray(array); // FAIL
+  test.is2dArray(addTwoValuesSafe(1, 2)); // FAIL
+  test.is2dArray(() => addTwoValuesSafe("a", "b")); // FAIL
+  test.printSubHeader("8-Tests, 5-fail, 3-pass");
   test.printSummary();
 
   test.printHeader("Testing catching errors using catchErr");
@@ -224,7 +354,7 @@ function runTests() {
     Error
   );
 
-test.printSubHeader("Expected to fail: no error should be thrown, error type and message are correct, using default message");
+  test.printSubHeader("Expected to fail: no error should be thrown, error type and message are correct, using default message");
   test.catchErr(
     () => addTwoValuesSafe(1, 2), // we are passing valid values (no error thrown)
     "Input argument is not a valid number", // this is the error message we are expecting
@@ -279,61 +409,32 @@ test.printSubHeader("Expected to fail: no error should be thrown, error type and
   test.printSubHeader("Expected: 12-Tests, 12-Tests fail, 0-Pass");
   test.printSummary();
 
-  // Testing similar basic tests but in silent mode (LevelInfo = 0)
-  test.printHeader("Testing the same assertEquals tests with setting levelInfo = 0"); // It logs out, because we haven't changed LevelInfo yet
-  test.setLevelInfo(0); // 0-Only summary result, 1-Detail results
-  // Because LevelInfo = 0 we use the console for traceability purpose
-  console.log("LevelInfo = " + test.getLevelInfo());
+  // Testing similar basic tests but in silent mode (levelInfo = 0)
+  test.printHeader("Testing assert and assertEquals under silent mode (levelInfo = 0)"); // It logs out, because we haven't changed levelInfo yet
+  test.levelInfo = 0; // 0-Only summary result, 1-Detail results
+  // Because levelInfo = 0 we use the console for traceability purpose
+  console.log("levelInfo = " + test.levelInfo);
   console.log("Reset counters");
   test.resetTestCounters();
-  test.assertEquals(() => addTwoValues(1, 2), 3);
-  test.assertEquals(() => addTwoValues(2, 2), 4, "Valid case: 2 + 2 = 4");
-  test.assertEquals(() => addTwoValues(1, 2), 4);
-  test.assertEquals(() => addTwoValues(1, 2), 4, "Expected to fail, because 1+2 != 4");
+  console.log("Testing assertEquals");
+  console.log("********************");
+  test.assertEquals(() => addTwoValues(2, 2), 4, "Valid case: 2 + 2 = 4"); // Pass
+  test.assertEquals(() => addTwoValues(1, 2), 3); // Pass
+  test.assertEquals(() => addTwoValues(1, 2), 4, "Expected to fail, because 1+2 != 4"); // Fail
+  test.assertEquals(() => addTwoValues(1, 2), 4); // Fail
+  console.log("Expected: Some tests failed (one line)");
   test.printSummary(); // Only summary result: Some test failed
-  test.printSubHeader("Reset counters");
+  console.log("Reset counters");
   test.resetTestCounters();
   console.log("Shows only the summary line, the counters are reseted so no tests, therefore all test passed");
   test.printSummary(); //Shows only summary line
 
-  // Testing the existing assert function work as expected
-  test.printSubHeader('Setting default level Info');
-  test.setLevelInfo(1);
-
-  test.printHeader("Testing addTwoValues using assert");
-  test.printSubHeader("LevelInfo = " + test.getLevelInfo());
-  test.printSubHeader("Test-1 Pass, Test-2 Fail");
-  test.assert(() => addTwoValues(1, 2) == 3, "Valid case: 1 + 2 = 3");
-  test.assert(() => addTwoValues(1, 2) == 4, "Invalid case: 1 + 2 != 4");
-  test.printSubHeader("Expected to log out two lines: statistics and summary");
-  test.printSummary();
-
-  test.printSubHeader("Testing when condition is boolean");
-  test.printSubHeader("Reset counters");
+  console.log("Testing assert");
+  console.log("**************");
+  console.log("Reset counters");
   test.resetTestCounters();
-  test.printSubHeader("Test-1 Pass, Test-2 pass (empty string), Test-3 fail");
-  test.assert(1 + 2 == 3, "Valid case: 1 + 2 = 3");
-  test.assert(1 + 2 == 3, ""); // testing empty message
-  test.assert(1 + 1 == 3, "Invalid case: 1 + 1 != 3");
-  test.printSubHeader("3-Tests, 1-fail, 2 pass");
-  test.printSummary();
-
-  test.printSubHeader("Testing undefined input arguments");
-  test.printSubHeader("Expected: Test-3 Fail (no arguments), Test-4 Pass (with undefined message), Test-5 Pass(with undefined message), Test-6 Pass(with undefined message)");
-  test.assert(); // Expected to fail, not a valid condition
-  test.assert(undefined == undefined); // Pass
-  test.assert(1 + 1 == 2);
-  test.assert(1 + 1 == 3);
-  test.printSubHeader("Expected: 6-Tests, Fail=3, Pass=3");
-  test.printSummary();
-
-  test.printSubHeader("Testing under silent mode: one test passed, one failed");
-  test.setLevelInfo(0);
-  console.log("LevelInfo = " + test.getLevelInfo());
-  console.log("Reseting the counters");
-  test.resetTestCounters();
-  test.assert(() => addTwoValues(1, 2) == 3, "Valid case: 1 + 2 = 3");
-  test.assert(() => addTwoValues(1, 2) == 4, "Invalid case: 1 + 2 != 4");
+  test.assert(() => addTwoValues(1, 2) == 3, "Valid case: 1 + 2 = 3"); // Pass
+  test.assert(() => addTwoValues(1, 2) == 4, "Invalid case: 1 + 2 != 4"); // Fail
   console.log("Expected to see some test failed");
   test.printSummary();
 
@@ -347,9 +448,19 @@ test.printSubHeader("Expected to fail: no error should be thrown, error type and
   test.printSummary();
 
   console.log("Changing the level info to 1");
-  test.setLevelInfo(1);
-  test.printSubHeader("Showing now printSummary with two lines for the previous set of tests");
+  test.levelInfo = 1;
+  test.printSubHeader("Showing now printSummary with two lines from the previous set of tests");
   test.printSummary();
+  test.printSubHeader("Set levelInfo to 1.1");
+  test.levelInfo = 1.1;
+  test.printSubHeader("Showing now printSummary with two lines from the previous set of tests");
+  test.printSummary();
+  test.printSubHeader("Set levelInfo to 0.1");
+  test.levelInfo = 0.1;
+  console.log("Showing now printSummary with the summary line only from the previous set of tests");
+  test.printSummary();
+  console.log("Changing the level info to 1");
+  test.levelInfo = 1;
 
   test.printHeader("Testing enable = false, the print-family functions print no information");
   test.disable();
